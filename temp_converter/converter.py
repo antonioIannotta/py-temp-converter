@@ -5,26 +5,28 @@ def converter(source: str, source_val: float, dest: str) -> float:
     :param source_val: the value to be converted
     :param dest: the desired unit input
     :return: the value converted from the source unit measure to the output unit measure
+    :raises ValueError: If an invalid unit is provided
     """
-    match source:
-        case "c":
-            match dest:
-                case "k":
-                    return from_c_to_k(source_val)
-                case "f":
-                    return from_c_to_f(source_val)
-        case "k":
-            match dest:
-                case "c":
-                    return from_k_to_c(source_val)
-                case "f":
-                    return from_k_to_f(source_val)
-        case "f":
-            match dest:
-                case "c":
-                    return from_f_to_c(source_val)
-                case "k":
-                    return from_f_to_k(source_val)
+
+    if source not in {"c", "k", "f"} or dest not in {"c", "k", "f"}:
+        raise ValueError("Invalid temperature unit. Use 'c', 'k', or 'f'.")
+
+    if not isinstance(source_val, (int, float)):
+        raise TypeError("source_val must be a numeric value.")
+
+    conversions = {
+        ("c", "k"): from_c_to_k(source_val),
+        ("c", "f"): from_c_to_f(source_val),
+        ("k", "c"): from_k_to_c(source_val),
+        ("k", "f"): from_k_to_f(source_val),
+        ("f", "c"): from_f_to_c(source_val),
+        ("f", "k"): from_f_to_k(source_val)
+    }
+
+    if source == dest:
+        return  source_val
+
+    return conversions[(source, dest)]
 
 
 def from_c_to_k(source_val: float) -> float:
@@ -33,7 +35,7 @@ def from_c_to_k(source_val: float) -> float:
     :param source_val: the temperature value
     :return: the converted temperature value
     """
-    pass
+    return 273.15 + source_val
 
 def from_c_to_f(source_val: float) -> float:
     """
@@ -41,7 +43,7 @@ def from_c_to_f(source_val: float) -> float:
     :param source_val: the temperature value
     :return: the converted temperature value
     """
-    pass
+    return 1.8 * source_val + 32
 
 def from_k_to_c(source_val: float) -> float:
     """
@@ -49,7 +51,7 @@ def from_k_to_c(source_val: float) -> float:
     :param source_val: the temperature value
     :return: the converted temperature value
     """
-    pass
+    return source_val - 273.15
 
 def from_k_to_f(source_val: float) -> float:
     """
@@ -57,7 +59,7 @@ def from_k_to_f(source_val: float) -> float:
     :param source_val: the temperature value
     :return: the converted temperature value
     """
-    pass
+    return from_c_to_f(from_k_to_c(source_val))
 
 def from_f_to_c(source_val: float) -> float:
     """
@@ -65,7 +67,7 @@ def from_f_to_c(source_val: float) -> float:
     :param source_val: the temperature value
     :return: the converted temperature value
     """
-    pass
+    return 5/9 * (source_val - 32)
 
 def from_f_to_k(source_val: float) -> float:
     """
@@ -73,4 +75,4 @@ def from_f_to_k(source_val: float) -> float:
     :param source_val: the temperature value
     :return: the converted temperature value
     """
-    pass
+    return from_c_to_k(from_f_to_c(source_val))
